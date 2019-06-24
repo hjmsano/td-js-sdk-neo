@@ -1,3 +1,3 @@
 import Polytrek from './polytrek';
-const nameSpace = process.env.NAMESPACE || 'Polytrek';
+const nameSpace = 'Polytrek';
 window[nameSpace] = new Polytrek();

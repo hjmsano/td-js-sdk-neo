@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "lint": "eslint"
+    "lint": "eslint ./src"
   },
   "repository": {
     "type": "git",
@@ -17,9 +17,7 @@
     "url": "https://github.com/polytrek/polytrek-client-js/issues"
   },
   "homepage": "https://github.com/polytrek/polytrek-client-js#readme",
-  "dependencies": {
-    "uuid": "^3.3.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-decorators": "^7.4.4",

@@ -15,14 +15,14 @@ export default class {
 
     save(key) {
         try {
-            storage.setItem(key, JSON.stringify(this.queue));
+            localStorage.setItem(key, JSON.stringify(this.queue));
         } catch (error) {
 
         }
     }
 
     restore(key) {
-        const restored = JSON.parse((localStorage.getItem(storageKey) || '[]'));
+        const restored = JSON.parse((localStorage.getItem(key) || '[]'));
         Array.prototype.push.apply(this.queue, restored);
     }
 

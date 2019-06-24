@@ -1,53 +1,48 @@
-'use strict';
+let managedEvents = {}, handlerKey = 0;
 
-exports.setupRecurringEvent = setupRecurringEvent;
-exports.addListener = addListener;
-exports.removeListener = removeListener;
+export default class {
+    constructor(config) {
+        let event, timer;
 
-let managedEvents = {};
-let handlerKey = 0;
-
-function setupRecurringEvent(eventName){
-    let event;
-    let timer;
-
-    try {
-        event = new CustomEvent(eventName);
-    } catch (e) {
-        event = window.parent.document.createEvent('CustomEvent');
-        event.initCustomEvent(eventName, false, false, {});
-    }
-
-    window.parent.requestAnimationFrame = window.parent.requestAnimationFrame
-        || window.parent.mozRequestAnimationFrame
-        || window.parent.webkitRequestAnimationFrame;
-
-    (function recurringEvent() {
-        window.parent.requestAnimationFrame(recurringEvent);
-        if (timer) {
-            return false;
+        try {
+            event = new CustomEvent(config.eventName);
+        } catch (e) {
+            event = window.parent.document.createEvent('CustomEvent');
+            event.initCustomEvent(config.eventName, false, false, {});
         }
-        timer = setTimeout( () => {
-            window.parent.dispatchEvent(event);
-            timer = null;
-        }, 250);
-    })();
-}
 
-function addListener(element, type, listener, capture){
-    element.addEventListener(type, listener, capture);
-    managedEvents[handlerKey] = {
-        element: element,
-        type: type,
-        listener: listener,
-        capture: capture
-    };
-    return handlerKey++;
-}
+        window.parent.requestAnimationFrame = window.parent.requestAnimationFrame
+            || window.parent.mozRequestAnimationFrame
+            || window.parent.webkitRequestAnimationFrame;
 
-function removeListener(handlerKey){
-    if (handlerKey in managedEvents) {
-        let e = managedEvents[handlerKey];
-        e.element.removeEventListener(e.type, e.listener, e.capture);
+        (function recurringEvent() {
+            window.parent.requestAnimationFrame(recurringEvent);
+            if (timer) {
+                return false;
+            }
+            timer = setTimeout( () => {
+                window.parent.dispatchEvent(event);
+                timer = null;
+            }, config.eventFrequency);
+        })();
     }
+
+    addListener(element, type, listener, capture){
+        element.addEventListener(type, listener, capture);
+        managedEvents[handlerKey] = {
+            element: element,
+            type: type,
+            listener: listener,
+            capture: capture
+        };
+        return handlerKey++;
+    }
+
+    removeListener(handlerKey){
+        if (handlerKey in managedEvents) {
+            let event = managedEvents[handlerKey];
+            event.element.removeEventListener(event.type, event.listener, event.capture);
+        }
+    }
+
 }
