@@ -54,7 +54,7 @@ export default class {
 
         if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function' && status === true) {
             try {
-                navigator.sendBeacon(url, body);
+                status = navigator.sendBeacon(url, body);
             } catch (error) {
                 status = false;
             }
