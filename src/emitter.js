@@ -38,6 +38,7 @@ export default class {
         let body = btoa(JSON.stringify(payload));
         let url = generateDestination();
         url += encodeURIComponent(body);
+        url += '&callback=none';
 
         if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function' && status === true) {
             try {

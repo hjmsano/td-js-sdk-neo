@@ -31,9 +31,12 @@ export default class Treasure {
     config(configObj) {
         config = configObj;
         utils = new Utils();
+        targetWindow = config.targetWindow;
         idm = new IDM({
-            prefix: config.prefix,
-            target: config.targetWindow
+            storageName: config.storageName || '_td',
+            storageExpires: config.storageExpires || 63072000,
+            storageDomain: config.storageDomain || utils.getDomain(window[targetWindow].document.location.hostname),
+            target: targetWindow
         });
         emitter = new Emitter({
             endpoint: config.endpoint,
@@ -45,9 +48,8 @@ export default class Treasure {
             prefix: config.prefix,
             deviceId: idm.deviceId,
             rootId: idm.rootId,
-            target: config.targetWindow
+            target: targetWindow
         });
-        targetWindow = config.targetWindow;
         parsedUrl = utils.parseUrl(window[targetWindow].document.location.href);
         parsedMeta = utils.parseMeta(window[targetWindow].document.getElementsByTagName('meta'));
         this.dataModel['td_url'] = window[targetWindow].document.location.href;
@@ -59,14 +61,14 @@ export default class Treasure {
 
     /**
      * Initialize a page level variables.
-     * @param  {Object} dataModel Data model.
+     * @param  {Object} initialData Additional data model.
      */
-    init(dataModel) {
+    init(initialData) {
 
         this.dataModel = utils.mergeObj([
             this.dataModel,
-            dataModel]
-        );
+            initialData
+        ]);
 
         if (config.eventName && config.eventFrequency && typeof events === 'undefined') {
             events = new Events({
@@ -121,16 +123,18 @@ export default class Treasure {
      */
     trackAction(action = 'unknown', category = 'unknown', eventContext = {}) {
         const now = new Date();
+        const client = utils.getClientInfo(targetWindow);
         const record = utils.mergeObj([
             this.dataModel,
             eventContext,
+            utils.getPerformanceInfo(),
             {
                 action: action,
                 category: category,
-                client: utils.getClientInfo(targetWindow),
-                performance: utils.getPerformanceInfo(),
-                sinceInitMs: now.getTime() - initTimestamp.getTime(),
-                sincePrevMs: now.getTime() - prevTimestamp.getTime()
+                since_init_ms: now.getTime() - initTimestamp.getTime(),
+                since_prev_ms: now.getTime() - prevTimestamp.getTime(),
+                td_viewport: `${client.viewport_w}x${client.viewport_h}`,
+                td_screen: `${client.screen_w}x${client.screen_h}`
             }
         ]);
         prevTimestamp = now;
@@ -187,14 +191,12 @@ export default class Treasure {
             if (trackableElement) {
                 element = trackableElement.element;
                 this.trackAction('click', trackableElement.category, {
-                    click: {
-                        tag: element.tagName,
-                        id: element.id || undefined,
-                        class: element.className || undefined,
-                        path: trackableElement.path || undefined,
-                        link: element.href || undefined,
-                        attr: element.dataset || undefined
-                    }
+                    cl_tag: element.tagName,
+                    cl_id: element.id || undefined,
+                    cl_class: element.className || undefined,
+                    cl_path: trackableElement.path || undefined,
+                    cl_link: element.href || undefined,
+                    cl_attr: element.dataset || undefined
                 });
             }
         }, false);
@@ -228,11 +230,9 @@ export default class Treasure {
                     setTimeout(() => {
                         if (currentVal > prevVal) {
                             this.trackAction('scroll', 'page', {
-                                scroll: {
-                                    pageHeight: result.dHeight,
-                                    depth: currentVal,
-                                    unit: scrollUnit
-                                }
+                                sc_page_height: result.dHeight,
+                                sc_depth: currentVal,
+                                sc_unit: scrollUnit
                             });
                             prevVal = (scrollUnit === 'percent') ? currentVal : currentVal + each;
                         }
@@ -260,11 +260,9 @@ export default class Treasure {
                     setTimeout(() => {
                         if (currentVal > prevVal) {
                             this.trackAction('read', 'content', {
-                                read: {
-                                    targetHeight: result.tHeight,
-                                    textLength: result.tLength,
-                                    readRate: currentVal,
-                                }
+                                rd_target_height: result.tHeight,
+                                rd_text_length: result.tLength,
+                                rd_rate: currentVal
                             });
                             prevVal = currentVal;
                         }
@@ -280,9 +278,7 @@ export default class Treasure {
         for (let i = 0; i < targetEvents.length; i++) {
             events.removeListener(eventHandlerKeys['media'][targetEvents[i]]);
             eventHandlerKeys['media'][targetEvents[i]] = events.addListener(window[targetWindow].document.body, targetEvents[i], (event) => {
-                this.trackAction(event.type, event.target.tagName.toLowerCase(), {
-                    media: utils.getMediaInfo(event.target)
-                });
+                this.trackAction(event.type, event.target.tagName.toLowerCase(), utils.getMediaInfo(event.target));
             }, {capture: true});
         }
 
@@ -293,9 +289,7 @@ export default class Treasure {
             }
             flags[event.target.src] = setTimeout(() => {
                 if (event.target.paused !== true && event.target.ended !== true) {
-                    this.trackAction(event.type, event.target.tagName.toLowerCase(), {
-                        media: utils.getMediaInfo(event.target)
-                    });
+                    this.trackAction(event.type, event.target.tagName.toLowerCase(), utils.getMediaInfo(event.target));
                 }
                 flags[event.target.src] = false;
             }, heartbeat * 1000);

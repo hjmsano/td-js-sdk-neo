@@ -14,8 +14,8 @@ const readCookie = (key) => {
 };
 
 const initDeviceId = () => {
-    const idCookie = readCookie(storageKey) || '',
-        idStorage = localStorage.getItem(storageKey) || '';
+    const idCookie = readCookie(storageName) || '',
+        idStorage = localStorage.getItem(storageName) || '';
     let deviceId;
 
     if (idCookie.length > 8) {
@@ -24,29 +24,29 @@ const initDeviceId = () => {
         deviceId = idStorage;
     } else {
         deviceId = initialId;
-        isNewId = true;
     }
     return deviceId;
 };
 
-let storageKey, initialId, isNewId = false;
+let storageName, storageExpires, storageDomain, initialId;
 
 export default class {
     constructor(config) {
         initialId = generateId();
-        storageKey = `${config.prefix}-id`;
+        storageName = config.storageName;
+        storageExpires = config.storageExpires;
+        storageDomain = config.storageDomain;
         this.deviceId = initDeviceId();
         this.rootId = initialId;
-        this.isNewId = isNewId;
     }
 
     setDeviceId(deviceId) {
         this.deviceId = deviceId;
         try {
-            localStorage.setItem(storageKey, deviceId);
+            localStorage.setItem(storageName, deviceId);
         } catch (e) {
             window.parent.document.cookie
-                = `${storageKey}=${deviceId}; Path=/; Max-Age=31536000; SameSite=Lax`
+                = `${storageName}=${deviceId}; Domain=${storageDomain} ;Path=/; Max-Age=${storageExpires}; SameSite=Lax`
         }
     }
 }

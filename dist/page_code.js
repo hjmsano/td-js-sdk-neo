@@ -5,12 +5,13 @@
     ) {
         Treasure.config({
             endpoint: 'in.treasuredata.com',
-            writeKey: 'hogehoge',
-            database: 'your_db',
+            writeKey: 'your_write_key',
+            database: 'database_name',
             table: 'destination_table',
             eventName: 'TreasureRecurringEvent',
             eventFrequency: 250,
-            prefix: 'treasure',
+            storageName: '_td',
+            storageExpires: 63072000,
             targetWindow: 'self',
             timeout: 4000,
             options: {
@@ -41,27 +42,21 @@
         });
 
         Treasure.init({
-            user:{
-                userId: '',
-                userStatus: '',
-                userAttr: {},
-            },
-            context:{
-                contentId: '',
-                contentHeadline: '',
-                contentStatus: '',
-                contentAttr: {},
-                pageAttr: {},
-            },
-            campaign:{
-                campaignCode: Treasure.getQueryVal('cid'),
-                campaignName: Treasure.getQueryVal('utm_campaign'),
-                campaignSource: Treasure.getQueryVal('utm_source'),
-                campaignMedium: Treasure.getQueryVal('utm_medium'),
-                campaignTerm: Treasure.getQueryVal('utm_term'),
-                campaignContent: Treasure.getQueryVal('utm_content'),
-            },
-            customAttr: {}
+            user_id: '',
+            user_dtatus: '',
+            user_attr: {},
+            content_id: '',
+            content_headline: '',
+            content_status: '',
+            content_attr: {},
+            page_attr: {},
+            campaign_code: Treasure.getQueryVal('cid'),
+            campaign_name: Treasure.getQueryVal('utm_campaign'),
+            campaign_source: Treasure.getQueryVal('utm_source'),
+            campaign_medium: Treasure.getQueryVal('utm_medium'),
+            campaign_term: Treasure.getQueryVal('utm_term'),
+            campaign_content: Treasure.getQueryVal('utm_content'),
+            custom_attr: {}
         });
 
         Treasure.trackPage();

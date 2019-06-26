@@ -5,40 +5,37 @@ export default class {
             dcl = timing.domContentLoadedEventStart - timing.domLoading,
             complete = timing.domComplete - timing.domLoading;
         return {
-            interactive: interactive >= 0 ? interactive : undefined,
-            dcl: dcl >= 0 ? dcl : undefined,
-            complete: complete >= 0 ? complete : undefined
+            pt_interactive: interactive >= 0 ? interactive : undefined,
+            pt_dcl: dcl >= 0 ? dcl : undefined,
+            pt_complete: complete >= 0 ? complete : undefined
         };
     }
 
     getClientInfo(targetWindow) {
-        const orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
         return {
-            viewportHeight: window[targetWindow].innerHeight,
-            viewportWidth: window[targetWindow].innerWidth,
-            screenHeight: window[targetWindow].screen.height,
-            screenWidth: window[targetWindow].screen.width,
-            screenOrientation: orientation
+            viewport_h: window[targetWindow].innerHeight,
+            viewport_w: window[targetWindow].innerWidth,
+            screen_h: window[targetWindow].screen.height,
+            screen_w: window[targetWindow].screen.width
         };
     }
 
     getMediaInfo(element) {
         if (element) {
             return {
-                src: element.src,
-                currentTime: Math.round(element.currentTime * 10) / 10,
-                duration: Math.round(element.duration * 10) / 10,
-                playedPercent: Math.round(element.currentTime / element.duration * 1000) / 10,
-                attr: {
-                    type: element.type || undefined,
-                    width: element.clientWidth || undefined,
-                    height: element.clientHeight || undefined,
-                    muted: element.muted || false,
-                    defaultMuted: element.defaultMuted || false,
-                    autoplay: element.autoplay || false,
-                    playerId: element.playerId || undefined,
-                    dataset: element.dataset
-                }
+                md_src: element.src,
+                md_current_time: Math.round(element.currentTime * 10) / 10,
+                md_duration: Math.round(element.duration * 10) / 10,
+                md_played_percent: Math.round(element.currentTime / element.duration * 1000) / 10,
+                md_type: element.type || undefined,
+                md_width: element.clientWidth || undefined,
+                md_height: element.clientHeight || undefined,
+                md_muted: element.muted || false,
+                md_default_muted: element.defaultMuted || false,
+                md_autoplay: element.autoplay || false,
+                md_player_id: element.playerId || undefined,
+                md_dataset: element.dataset
+
             };
         } else {
             return false;
@@ -203,5 +200,21 @@ export default class {
             }
         }
         return result;
+    }
+
+    getDomain(hostname) {
+        let domainName, parsedHostname = hostname.split('.').reverse();
+        if (parsedHostname.length <= 2) {
+            domainName = hostname;
+        } else {
+            if (parsedHostname[1].length > 2) {
+                domainName = parsedHostname[1] + '.' + parsedHostname[0];
+            } else if (parsedHostname[0].length === 2 && parsedHostname[1].length === 2) {
+                domainName = parsedHostname[2] + '.' + parsedHostname[1] + '.' + parsedHostname[0];
+            } else {
+                domainName = hostname;
+            }
+        }
+        return domainName;
     }
 }
