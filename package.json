@@ -1,5 +1,5 @@
 {
-  "name": "polytrek-client-js",
+  "name": "td-js-sdk-neo",
   "version": "0.0.1",
   "description": "",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/polytrek/polytrek-client-js.git"
+    "url": "git+https://github.com/hjmsano/td-js-sdk-neo.git"
   },
-  "author": "Polytrek Project",
+  "author": "Hajime Sano",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/polytrek/polytrek-client-js/issues"
+    "url": "https://github.com/hjmsano/td-js-sdk-neo/issues"
   },
-  "homepage": "https://github.com/polytrek/polytrek-client-js#readme",
+  "homepage": "https://github.com/hjmsano/td-js-sdk-neo#readme",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.4.5",

@@ -3,7 +3,7 @@ module.exports = {
     entry: "./src/index.js",
     output: {
         path: __dirname + '/dist',
-        filename: 'pt.js'
+        filename: 'treasure.js'
     },
     module: {
         rules: [

@@ -1,3 +1,3 @@
-import Polytrek from './polytrek';
-const nameSpace = 'Polytrek';
-window[nameSpace] = new Polytrek();
+import Treasure from './treasure';
+const nameSpace = 'Treasure';
+window[nameSpace] = new Treasure();

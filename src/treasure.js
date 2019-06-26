@@ -4,18 +4,24 @@ import IDM from './idm';
 import Utils from './utils';
 
 const
-    sdkName = 'JS',
-    sdkVersion = '0.4.0',
+    sdkVersion = '0.0.1',
     initTimestamp = new Date();
 
-let config, targetWindow, idm, emitter, events, utils, parsedUrl,
+let config, targetWindow, idm, emitter, events, utils, parsedUrl, parsedMeta,
     eventHandlerKeys = {media: []},
     prevTimestamp = new Date();
 
-export default class Polytrek {
+export default class Treasure {
 
     constructor() {
-        this.dataModel = {};
+        this.dataModel = {
+            td_version: sdkVersion,
+            td_charset: (document.characterSet || document.charset || '-').toLowerCase(),
+            td_language: ((window.navigator && (window.navigator.language || window.navigator.browserLanguage)) || '-').toLowerCase(),
+            td_color: window.screen ? window.screen.colorDepth + '-bit' : '-',
+            td_title: document.title,
+            td_user_agent: window.navigator.userAgent
+        };
     }
 
     /**
@@ -31,9 +37,9 @@ export default class Polytrek {
         });
         emitter = new Emitter({
             endpoint: config.endpoint,
-            apiKey: config.apiKey,
-            sdkName: sdkName,
-            sdkVersion: sdkVersion,
+            writeKey: config.writeKey,
+            database: config.database,
+            table: config.table,
             method: config.method,
             timeout: config.timeout,
             prefix: config.prefix,
@@ -43,6 +49,12 @@ export default class Polytrek {
         });
         targetWindow = config.targetWindow;
         parsedUrl = utils.parseUrl(window[targetWindow].document.location.href);
+        parsedMeta = utils.parseMeta(window[targetWindow].document.getElementsByTagName('meta'));
+        this.dataModel['td_url'] = window[targetWindow].document.location.href;
+        this.dataModel['td_host'] = parsedUrl.hostname;
+        this.dataModel['td_path'] = parsedUrl.pathname;
+        this.dataModel['td_referrer'] = window[targetWindow].document.referrer;
+        this.dataModel['td_description'] = parsedMeta.description;
     }
 
     /**
@@ -51,7 +63,10 @@ export default class Polytrek {
      */
     init(dataModel) {
 
-        this.dataModel = dataModel;
+        this.dataModel = utils.mergeObj([
+            this.dataModel,
+            dataModel]
+        );
 
         if (config.eventName && config.eventFrequency && typeof events === 'undefined') {
             events = new Events({
@@ -120,15 +135,7 @@ export default class Polytrek {
         ]);
         prevTimestamp = now;
         emitter.emit(record);
-
-        if (idm.isNewId) {
-            emitter.getDeviceId((result) => {
-                idm.setDeviceId(result);
-                idm.isNewId = false;
-            });
-        } else {
-            idm.setDeviceId(idm.deviceId);
-        }
+        idm.setDeviceId(idm.deviceId);
     }
 
     /**

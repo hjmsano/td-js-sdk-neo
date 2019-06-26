@@ -1,4 +1,4 @@
-const xhr = (url, body, method, timeout, callback) => {
+const xhr = (url, body, timeout, callback) => {
     let xhr = new XMLHttpRequest();
     if (typeof callback === 'function') {
         xhr.onreadystatechange = () => {
@@ -13,17 +13,17 @@ const xhr = (url, body, method, timeout, callback) => {
             }
         };
     }
-    xhr.open(method, url, true);
+    xhr.open('GET', url, true);
     xhr.timeout = timeout;
     xhr.withCredentials = true;
     xhr.send(body);
     return true;
 };
 
-const generateDestination = (feature) => {
+const generateDestination = () => {
     const timestamp = (+new Date).toString(10),
-        protocol = (document.location && document.location.protocol === 'https:') ? 'https:' : 'http:';
-    return `${protocol}//${config.endpoint}/${feature}/${config.apiKey}/${config.deviceId}/1/${timestamp}/`;
+        protocol = (document.location && document.location.protocol === 'https:') ? 'https:' : 'https:';
+    return `${protocol}//${config.endpoint}/js/v3/event/${config.database}/${config.table}?api_key=${config.writeKey}&modified=${timestamp}&data=`;
 };
 
 let config, status = true;
@@ -33,73 +33,36 @@ export default class {
         config = obj;
     }
 
-    emit(record) {
-        let payload = {
-            sdk: {
-                name: config.sdkName,
-                version: config.sdkVersion
-            },
-            beacons: [
-                record
-            ]
-        };
-
-        let url = generateDestination('ingest');
+    emit(payload) {
+        payload['td_client_id'] = config.deviceId;
         let body = btoa(JSON.stringify(payload));
-
-        if (config.method === 'GET') {
-            url += `?body=${encodeURIComponent(body)}`;
-            body = '';
-        }
+        let url = generateDestination();
+        url += encodeURIComponent(body);
 
         if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function' && status === true) {
             try {
-                status = navigator.sendBeacon(url, body);
+                status = navigator.sendBeacon(url);
             } catch (error) {
                 status = false;
             }
-            if (status) {
+            if (!status) {
                 if ('fetch' in window[config.target] && typeof window[config.target].fetch === 'function') {
                     const controller = new AbortController();
                     const signal = controller.signal;
                     const option = {
                         signal,
-                        method: config.method,
+                        method: 'GET',
                         cache: 'no-store',
                         keepalive: true
                     };
-                    if (config.method === 'POST') {
-                        option['body'] = body;
-                    }
                     setTimeout(() => controller.abort(), config.timeout);
                     window[config.target].fetch(url, option);
                 } else {
-                    xhr(url, body, config.method, config.timeout);
+                    xhr(url, body, config.timeout);
                 }
             }
         } else {
-            xhr(url, body, config.method, config.timeout);
-        }
-    }
-
-    getDeviceId(callback) {
-        let url = generateDestination('sync');
-        url += `?name=${config.prefix}Id`;
-        if ('fetch' in window[config.target] && typeof window[config.target].fetch === 'function' && 'AbortController' in window[config.target] && typeof window[config.target].AbortController === 'function') {
-            const controller = new AbortController();
-            const signal = controller.signal;
-            const option = {signal, method: 'GET', cache: 'no-store', keepalive: true};
-            setTimeout(() => controller.abort(), config.timeout);
-            window[config.target].fetch(url, option).then((response) => {
-                    return response.json();
-                }
-            ).then((result) => {
-                callback.call(null, result.id);
-            });
-        } else {
-            xhr(url, '', 'GET', config.timeout, (result) => {
-                callback.call(null, result.id);
-            });
+            xhr(url, body, config.timeout);
         }
     }
 }

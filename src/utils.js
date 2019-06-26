@@ -192,4 +192,16 @@ export default class {
         }
         return result;
     }
+
+    parseMeta(elements) {
+        let result = {};
+        for (let i = 0; i < elements.length; i++) {
+            let key = elements[i].getAttribute('name');
+            let val = elements[i].getAttribute('content');
+            if (key && val) {
+                result[key] = val;
+            }
+        }
+        return result;
+    }
 }

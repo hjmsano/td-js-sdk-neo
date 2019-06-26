@@ -3,14 +3,15 @@
     if ('querySelector' in window.parent.document &&
         'addEventListener' in window.parent
     ) {
-        Polytrek.config({
-            endpoint: 'stat.example.com',
-            apiKey: '2ee204330a7b2701a6bf413473fcc486',
-            eventName: 'PolytrekRecurringEvent',
+        Treasure.config({
+            endpoint: 'in.treasuredata.com',
+            writeKey: 'hogehoge',
+            database: 'your_db',
+            table: 'destination_table',
+            eventName: 'TreasureRecurringEvent',
             eventFrequency: 250,
-            prefix: 'polytrek',
+            prefix: 'treasure',
             targetWindow: 'self',
-            method: 'POST',
             timeout: 4000,
             options: {
                 unload: {
@@ -39,14 +40,13 @@
             }
         });
 
-        Polytrek.init({
+        Treasure.init({
             user:{
                 userId: '',
                 userStatus: '',
                 userAttr: {},
             },
             context:{
-                pageTitle: window.parent.document.title,
                 contentId: '',
                 contentHeadline: '',
                 contentStatus: '',
@@ -54,16 +54,16 @@
                 pageAttr: {},
             },
             campaign:{
-                campaignCode: Polytrek.getQueryVal('cid'),
-                campaignName: Polytrek.getQueryVal('utm_campaign'),
-                campaignSource: Polytrek.getQueryVal('utm_source'),
-                campaignMedium: Polytrek.getQueryVal('utm_medium'),
-                campaignTerm: Polytrek.getQueryVal('utm_term'),
-                campaignContent: Polytrek.getQueryVal('utm_content'),
+                campaignCode: Treasure.getQueryVal('cid'),
+                campaignName: Treasure.getQueryVal('utm_campaign'),
+                campaignSource: Treasure.getQueryVal('utm_source'),
+                campaignMedium: Treasure.getQueryVal('utm_medium'),
+                campaignTerm: Treasure.getQueryVal('utm_term'),
+                campaignContent: Treasure.getQueryVal('utm_content'),
             },
             customAttr: {}
         });
 
-        Polytrek.trackPage();
+        Treasure.trackPage();
     }
 }());
