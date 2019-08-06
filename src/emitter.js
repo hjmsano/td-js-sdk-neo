@@ -35,7 +35,7 @@ export default class {
 
     emit(payload) {
         payload['td_client_id'] = config.deviceId;
-        let body = btoa(JSON.stringify(payload));
+        let body = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
         let url = generateDestination();
         url += encodeURIComponent(body);
         url += '&callback=none';

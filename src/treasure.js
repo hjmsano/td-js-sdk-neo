@@ -4,7 +4,7 @@ import IDM from './idm';
 import Utils from './utils';
 
 const
-    sdkVersion = '0.0.1',
+    sdkVersion = '0.0.2',
     initTimestamp = new Date();
 
 let config, targetWindow, idm, emitter, events, utils, parsedUrl, parsedMeta,
@@ -20,7 +20,13 @@ export default class Treasure {
             td_language: ((window.navigator && (window.navigator.language || window.navigator.browserLanguage)) || '-').toLowerCase(),
             td_color: window.screen ? window.screen.colorDepth + '-bit' : '-',
             td_title: document.title,
-            td_user_agent: window.navigator.userAgent
+            td_user_agent: window.navigator.userAgent,
+            td_browser: 'td_browser',
+            td_browser_version: 'td_browser_version',
+            td_os: 'td_os',
+            td_os_version: 'td_os_version',
+            td_globl_id: 'td_global_id',
+            td_ip: 'td_ip',
         };
     }
 
