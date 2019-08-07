@@ -4,7 +4,7 @@ import IDM from './idm';
 import Utils from './utils';
 
 const
-    sdkVersion = '0.0.2',
+    sdkVersion = '0.1.0',
     initTimestamp = new Date();
 
 let config, targetWindow, idm, emitter, events, utils, parsedUrl, parsedMeta,
