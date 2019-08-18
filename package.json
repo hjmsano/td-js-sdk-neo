@@ -1,7 +1,7 @@
 {
   "name": "td-js-sdk-neo",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.2.0",
+  "description": "Yet another TreasureData JS SDK.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
@@ -19,13 +19,13 @@
   "homepage": "https://github.com/hjmsano/td-js-sdk-neo#readme",
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.4.5",
+    "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-decorators": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-env": "^7.5.5",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.6",
     "eslint": "^5.16.0",
-    "webpack": "^4.32.2",
-    "webpack-cli": "^3.3.2"
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7"
   }
 }

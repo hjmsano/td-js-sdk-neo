@@ -4,7 +4,7 @@ import IDM from './idm';
 import Utils from './utils';
 
 const
-    sdkVersion = '0.1.0',
+    sdkVersion = '0.2.0',
     initTimestamp = new Date();
 
 let config, targetWindow, idm, emitter, events, utils, parsedUrl, parsedMeta,
@@ -256,6 +256,7 @@ export default class Treasure {
         const each = granularity || 20;
         const steps = 100 / each;
         const limit = threshold * 1000 || 2 * 1000;
+        const readStart = new Date();
         let result = {}, currentVal = 0, prevVal = 0;
         events.removeListener(eventHandlerKeys['read']);
         eventHandlerKeys['read'] = events.addListener(window[targetWindow], eventName, () => {
@@ -268,7 +269,8 @@ export default class Treasure {
                             this.trackAction('read', 'content', {
                                 rd_target_height: result.tHeight,
                                 rd_text_length: result.tLength,
-                                rd_rate: currentVal
+                                rd_rate: currentVal,
+                                rd_elapsed_ms: (new Date()).getTime() - readStart.getTime()
                             });
                             prevVal = currentVal;
                         }
